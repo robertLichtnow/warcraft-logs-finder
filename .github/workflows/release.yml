@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "WarcraftLogsFinder/WarcraftLogsFinder.toc"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version from .toc
+        id: toc
+        run: |
+          version=$(grep -m1 '^## Version:' WarcraftLogsFinder/WarcraftLogsFinder.toc | sed 's/^## Version:[[:space:]]*//')
+          if [ -z "$version" ]; then
+            echo "Could not find ## Version in the .toc file" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check whether this version was already released
+        id: check
+        run: |
+          if git ls-remote --tags origin "refs/tags/${{ steps.toc.outputs.tag }}" | grep -q .; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Package addon for CurseForge
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          mkdir -p dist
+          zip -r "dist/WarcraftLogsFinder-${{ steps.toc.outputs.version }}.zip" WarcraftLogsFinder
+
+      - name: Tag and publish release
+        if: steps.check.outputs.exists == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag "${{ steps.toc.outputs.tag }}"
+          git push origin "${{ steps.toc.outputs.tag }}"
+          gh release create "${{ steps.toc.outputs.tag }}" \
+            "dist/WarcraftLogsFinder-${{ steps.toc.outputs.version }}.zip" \
+            --title "${{ steps.toc.outputs.tag }}" \
+            --generate-notes
+
+      - name: Skip (version already released)
+        if: steps.check.outputs.exists == 'true'
+        run: echo "Tag ${{ steps.toc.outputs.tag }} already exists -- nothing to do."

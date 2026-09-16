@@ -1,0 +1,10 @@
+## Interface: 120100
+## Title: Warcraft Logs Finder
+## Notes: Adds a "Copy Warcraft Logs URL" option to Premade Groups applicants and group listings.
+## Author:
+## Version: 0.1.0
+
+Data.lua
+Popup.lua
+Menu.lua
+Core.lua
