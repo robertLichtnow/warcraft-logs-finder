@@ -128,6 +128,30 @@ function ns.Data.SplitNameRealm(fullName)
 	return name, realm, isNormalizedRealm
 end
 
+-- Reads a live unit token (e.g. "party1", "target", "focus", "player") off the game
+-- world, as opposed to SplitNameRealm which parses a name string handed to us by an API
+-- like C_LFGList. UnitFullName's realm is already normalized (no spaces/apostrophes)
+-- when the unit is cross-realm, and empty when it's on the player's own realm -- same
+-- shape as the realm half of a "Name-Realm" identity string, so it's handled the same way.
+function ns.Data.GetUnitIdentity(unit)
+	if not unit or not UnitExists(unit) or not UnitIsPlayer(unit) then
+		return nil
+	end
+
+	local name, realm = UnitFullName(unit)
+	if not name or name == "" then
+		return nil
+	end
+
+	local isNormalizedRealm = true
+	if not realm or realm == "" then
+		realm = GetRealmName()
+		isNormalizedRealm = false
+	end
+
+	return name, realm, isNormalizedRealm
+end
+
 function ns.Data.BuildCharacterURL(characterName, realmName, isNormalizedRealm, contentType)
 	if not characterName or characterName == "" then
 		return nil

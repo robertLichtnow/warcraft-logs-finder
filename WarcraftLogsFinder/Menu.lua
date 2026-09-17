@@ -68,3 +68,28 @@ Menu.ModifyMenu("MENU_LFG_FRAME_SEARCH_ENTRY", function(owner, rootDescription)
 	local contentType = ns.Data.GetContentTypeForActivity(activityID)
 	AddCopyURLButton(rootDescription, "Copy Leader's Warcraft Logs URL", name, realm, isNormalizedRealm, contentType)
 end)
+
+-- Blizzard's unit-frame right-click menu is one system shared by every frame (party,
+-- focus, target, raid, nameplates, ...). Which tag it opens under depends on the
+-- targeted unit's relationship to the player, not on which frame was clicked -- e.g.
+-- right-clicking the target frame while your target is a party member opens
+-- MENU_UNIT_PARTY, the same tag a right-click on the party frame itself opens. So to
+-- cover "right-click a party member" and "right-click whoever is targeted/focused" we
+-- hook every tag a player-controlled character can open a menu under. contextData.unit
+-- is the live unit token (e.g. "party1", "target", "focus") regardless of tag.
+local UNIT_MENU_TAGS = {
+	"MENU_UNIT_PARTY",
+	"MENU_UNIT_RAID_PLAYER",
+	"MENU_UNIT_SELF",
+	"MENU_UNIT_PLAYER",
+	"MENU_UNIT_ENEMY_PLAYER",
+	"MENU_UNIT_FOCUS",
+}
+
+for _, tag in ipairs(UNIT_MENU_TAGS) do
+	Menu.ModifyMenu(tag, function(owner, rootDescription, contextData)
+		local unit = contextData and contextData.unit
+		local name, realm, isNormalizedRealm = ns.Data.GetUnitIdentity(unit)
+		AddCopyURLButton(rootDescription, "Copy Warcraft Logs URL", name, realm, isNormalizedRealm, nil)
+	end)
+end
