@@ -60,7 +60,7 @@ then Escape or Close to dismiss the window.
 
 Warcraft Logs treats a raid tier and a Mythic+ season as the same kind of "zone", and
 a character URL can jump straight to one with `#zone=<id>` — but that ID changes every
-tier/season. `WarcraftLogsFinder/Data.lua` has two constants for this, `RAID_ZONE_ID`
+tier/season. `Data.lua` has two constants for this, `RAID_ZONE_ID`
 and `MYTHIC_PLUS_ZONE_ID`, already set to the current tier/season.
 
 When the next one opens, update whichever constant changed: open the new tier/season
@@ -72,7 +72,7 @@ character, just not deep-linked to a specific tier).
 
 Issues and pull requests are welcome.
 
-- `WarcraftLogsFinder/Data.lua` is the single source of truth for anything that
+- `Data.lua` is the single source of truth for anything that
   changes with the game rather than the addon: the two zone IDs above, and the realm
   slug table used for characters whose realm name doesn't survive Blizzard's
   cross-realm normalization cleanly (e.g. `Kel'Thuzad`). If a copied URL 404s because

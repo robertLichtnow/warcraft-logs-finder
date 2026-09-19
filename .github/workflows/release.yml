@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "WarcraftLogsFinder/WarcraftLogsFinder.toc"
+      - "WarcraftLogsFinder.toc"
   workflow_dispatch:
 
 permissions:
@@ -28,7 +28,7 @@ jobs:
       - name: Read version from .toc
         id: toc
         run: |
-          version=$(grep -m1 '^## Version:' WarcraftLogsFinder/WarcraftLogsFinder.toc | sed 's/^## Version:[[:space:]]*//')
+          version=$(grep -m1 '^## Version:' WarcraftLogsFinder.toc | sed 's/^## Version:[[:space:]]*//')
           if [ -z "$version" ]; then
             echo "Could not find ## Version in the .toc file" >&2
             exit 1
@@ -48,8 +48,9 @@ jobs:
       - name: Package addon for CurseForge
         if: steps.check.outputs.exists == 'false'
         run: |
-          mkdir -p dist
-          zip -r "dist/WarcraftLogsFinder-${{ steps.toc.outputs.version }}.zip" WarcraftLogsFinder
+          mkdir -p "dist/WarcraftLogsFinder"
+          cp WarcraftLogsFinder.toc Core.lua Data.lua Menu.lua Popup.lua "dist/WarcraftLogsFinder/"
+          (cd dist && zip -r "WarcraftLogsFinder-${{ steps.toc.outputs.version }}.zip" WarcraftLogsFinder)
 
       - name: Tag and publish release
         if: steps.check.outputs.exists == 'false'
