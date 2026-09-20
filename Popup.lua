@@ -14,7 +14,9 @@ StaticPopupDialogs["WARCRAFTLOGSFINDER_COPY_URL"] = {
 		self.EditBox:SetScript("OnKeyDown", function(_, key)
 			if key == "C" and (IsControlKeyDown() or IsMetaKeyDown()) then
 				C_Timer.After(0, function()
-					self:Hide()
+					if self.which == "WARCRAFTLOGSFINDER_COPY_URL" then
+						self:Hide()
+					end
 				end)
 			end
 		end)
@@ -31,7 +33,6 @@ StaticPopupDialogs["WARCRAFTLOGSFINDER_COPY_URL"] = {
 	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = STATICPOPUP_NUMDIALOGS,
 }
 
 function ns.Popup.ShowURL(url)
