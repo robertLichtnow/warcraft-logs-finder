@@ -11,6 +11,14 @@ StaticPopupDialogs["WARCRAFTLOGSFINDER_COPY_URL"] = {
 		self.EditBox:SetText(url)
 		self.EditBox:HighlightText()
 		self.EditBox:SetFocus()
+		self.EditBox:SetScript("OnKeyDown", function(_, key)
+			if key == "C" and (IsControlKeyDown() or IsMetaKeyDown()) then
+				self:Hide()
+			end
+		end)
+	end,
+	OnHide = function(self)
+		self.EditBox:SetScript("OnKeyDown", nil)
 	end,
 	EditBoxOnEnterPressed = function(self)
 		self:GetParent():Hide()

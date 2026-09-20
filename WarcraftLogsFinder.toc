@@ -2,7 +2,7 @@
 ## Title: Warcraft Logs Finder
 ## Notes: Adds a "Copy Warcraft Logs URL" option to Premade Groups applicants and group listings, party members, and your target/focus.
 ## Author:
-## Version: 0.2.3
+## Version: 0.3.0
 
 Data.lua
 Popup.lua
